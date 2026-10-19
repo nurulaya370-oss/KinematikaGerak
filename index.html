@@ -1,0 +1,24 @@
+Object.entries(P).forEach(([n,p])=>{
+ const b=document.createElement('button');b.id='n'+n;b.textContent=NAV[n];b.onclick=()=>go(+n);$('nav').appendChild(b);
+ const s=document.createElement('section');s.id='s'+n;s.hidden=true;
+ s.innerHTML=`<h2>${p.t}</h2><div class="q"><b>Rumusan masalah:</b> ${p.q}</div>
+<label>Hipotesismu (tebakan sebelum mencoba)<textarea rows="2"></textarea></label>
+<div class="ctl">${mk(n,p.c)}</div>
+<div class="btn"><button data-a="p">▶️ Jalankan</button><button data-a="l">＋ Catat data</button><button data-a="c">Hapus data</button>${p.x?'<button data-a="x">Cek hasil hitungan</button>':''}</div>
+${p.ah?<canvas id="a${n}" data-h="${p.ah}"></canvas>:''}${p.gh?`<canvas id="g${n}" data-h="${p.gh}"></canvas>`:''}
+<div class="out" id="o${n}"></div>
+<div class="sc"><table><thead><tr>${p.h.map(h=><th>${h}</th>).join('')}</tr></thead><tbody id="b${n}"></tbody></table></div>
+<label>Kesimpulanmu (berdasarkan data pada tabel)<textarea rows="3"></textarea></label>`;
+ s.oninput=e=>{const i=e.target;if(i.id[0]!='k')return;const l=$(i.id+'v');if(l)l.textContent=fm(+i.value);p.pre&&p.pre(i.id);p.draw()};
+ s.onclick=e=>{const a=e.target.dataset.a;if(!a)return;
+  if(a=='l'){const r=[...p.r],pv=LG[n].at(-1);if(n==4)r[3]=pv&&r[0]!=pv[0]?(r[1]-pv[1])/(r[0]-pv[0]):'–';LG[n].push(r);tbl(n)}
+  if(a=='c'){LG[n]=[];tbl(n)}
+  if(a=='x'){p.show=!p.show;p.draw()}
+  if(a=='p'){cancelAnimationFrame(raf);p.draw();const sl=$('k'+n+'t'),mx=+sl.max;let t0;
+   const f=ts=>{t0=t0??ts;const q=Math.min(1,(ts-t0)/8000);sl.value=mx*q;$('k'+n+'tv').textContent=fm(+sl.value);p.draw();if(q<1)raf=requestAnimationFrame(f)};raf=requestAnimationFrame(f)}};
+ $('main').appendChild(s)});
+onresize=()=>P[cur].draw();
+matchMedia('(prefers-color-scheme:dark)').onchange=()=>P[cur].draw();
+onhashchange=()=>{const n=+location.hash.slice(1);if(P[n]&&n!=cur)go(n)};
+{const n=+location.hash.slice(1);go(P[n]?n:1)}
+</script></body></html>
